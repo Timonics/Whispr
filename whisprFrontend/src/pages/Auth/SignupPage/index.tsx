@@ -85,7 +85,7 @@ const Signup: React.FC = () => {
                 account?{" "}
                 <a
                   className="font-bold font-monte text-xs sm:text-base text-[#FFB6C1] underline underline-offset-1"
-                  href="/auth/login"
+                  href="auth/login"
                   data-discover="true"
                 >
                   Log in
