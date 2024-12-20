@@ -11,7 +11,7 @@ const AuthLayout: React.FC = () => {
       <div
         className={`w-5/6 ${
           location.pathname === loginRoute && "md:w-3/5 lg:w-2/5"
-        } p-4 rounded-md shadow-black shadow-2xl flex flex-col gap-5 bg-[#4044486d]`}
+        } ${location.pathname === "/auth/verify-success" && "sm:w-3/5 lg:w-2/5"} p-4 rounded-md shadow-black shadow-2xl flex flex-col gap-5 bg-[#4044486d]`}
       >
         <NavBar />
         <Outlet />
