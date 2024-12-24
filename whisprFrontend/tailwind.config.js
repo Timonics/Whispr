@@ -14,6 +14,9 @@ export default {
         pops: "Poppins",
         sans: "Open-sans",
       },
+      colors: {
+        mypurple: "#7741f4"
+      }
     },
   },
   plugins: [daisyui],

@@ -1,29 +1,169 @@
 import { Request, Response } from "express";
 import { User } from "../db/models/user.model";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 import { UserAttributes } from "../interfaces";
+import { generateToken } from "../lib/utils.lib";
 
 const createNewUser = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      res.status(400).json({ message: "User already exists" });
+      return;
     }
     const passwordHash = await hash(password, 10);
     let newUser: UserAttributes = new User({
       name,
       email,
       password: passwordHash,
+      avatar,
     });
-    newUser = await newUser.save();
 
-    if (!newUser) {
-      return res.status(400).json({ message: "Failed to create new user" });
+    generateToken(newUser.id, res);
+    const savedUser = await newUser.save();
+
+    if (!savedUser) {
+      res.status(400).json({ message: "Failed to create new user" });
+      return;
     }
 
-    return res.status(201).json(newUser);
-  } catch (error) {}
+    res.status(201).json(savedUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
-export {createNewUser}
+const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const userExists = await User.findOne({ email });
+    if (!userExists) {
+      res.status(400).json({ message: "User does not exists" });
+      return;
+    }
+
+    const isValidPassword = await compare(password, userExists.password);
+    if (!isValidPassword) {
+      res.status(400).json({ message: "Password is not correct" });
+      return;
+    }
+
+    //generate token and store to cookie
+    generateToken(userExists.id, res);
+
+    const user = {
+      id: userExists._id,
+      name: userExists.name,
+      email: userExists.email,
+      avatar: userExists.avatar,
+    };
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userID } = req.params;
+    const { name, email, avatar } = req.body;
+    const userExists = await User.findById(userID);
+    if (!userExists) {
+      res.status(400).json({ message: "User does not exists" });
+      return;
+    }
+    const updateUser = await User.findByIdAndUpdate(
+      userID,
+      { name, email, avatar },
+      { new: true }
+    );
+    if (!updateUser) {
+      res.status(400).json({ message: "User details is not updated" });
+    }
+    res.status(200).json({ message: "User details updated successfully" });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const updateUserPassword = async (req: Request, res: Response) => {
+  try {
+    const { userID } = req.params;
+    const { oldPassword, newPassword } = req.body;
+    const userExists = await User.findById(userID);
+    if (!userExists) {
+      res.status(400).json({ message: "User does not exists" });
+      return;
+    }
+    const isValidPassword = await compare(oldPassword, userExists.password);
+    if (!isValidPassword) {
+      res.status(400).json({ message: "Old password is not correct" });
+      return;
+    }
+    //update password
+    const newPasswordHash = await hash(newPassword, 10);
+    const updatePassword = await User.findByIdAndUpdate(
+      userID,
+      { password: newPasswordHash },
+      { new: true }
+    );
+    if (!updatePassword) {
+      res.status(400).json({ message: "Password is not updated" });
+    }
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const addFriend = async (req: Request, res: Response) => {
+  try {
+    const { friendEmail } = req.body;
+    const userId = req.user._id;
+
+    const friend = await User.findOne({ email: friendEmail });
+    if (!friend) {
+      res.status(400).json({ message: "Friend does not exists" });
+      return;
+    }
+
+    //check if user is already friends with this user
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(400).json({ message: "User does not exists" });
+      return; // user does not exist
+    }
+    const isFriend = user.friends.includes(friend._id);
+    if (isFriend) {
+      res
+        .status(400)
+        .json({ message: "You are already friends with this user" });
+      return; // user is already friends with this user
+    }
+
+    const addFriendship = await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: { friends: friend._id },
+      },
+      { new: true }
+    );
+    if (!addFriendship) {
+      res.status(400).json({ message: "Friendship is not added" });
+      return;
+    }
+    res.status(200).json({ message: "Friendship added successfully" });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export { createNewUser, login, updateUser, updateUserPassword, addFriend };

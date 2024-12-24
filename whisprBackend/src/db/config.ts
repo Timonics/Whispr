@@ -3,7 +3,7 @@ import { config } from "dotenv";
 
 config();
 
-const URI = process.env.URI || "";
+const URI = process.env.DB_URI || "";
 
 const dataBaseConnect = async () => {
   const connected = await mongoose.connect(URI);
@@ -13,4 +13,4 @@ const dataBaseConnect = async () => {
   console.log("Successfully Connected to DB");
 };
 
-export default dataBaseConnect
+export default dataBaseConnect;
