@@ -8,8 +8,8 @@ import { TbUser } from "react-icons/tb";
 
 const Footer: React.FC = () => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between h-[40px] backdrop-blur-sm bg-black/20 md:hidden px-5">
-      <NavLink to="chats" className="flex flex-col items-center">
+    <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between h-[40px] backdrop-blur-sm bg-black/20 md:hidden px-5 sm:px-10 ">
+      <NavLink to="" className="flex flex-col items-center">
         <PiChatsCircleBold size={18}/>
         <span className="text-xs font-bold font-pops">Chats</span>
       </NavLink>

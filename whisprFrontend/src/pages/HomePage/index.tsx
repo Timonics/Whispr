@@ -5,9 +5,9 @@ import Footer from "../../components/Footer";
 
 const HomeLayout: React.FC = () => {
   return (
-    <div className="h-screen flex flex-col">
-      <NavBar />
-      <Outlet />
+    <div className="min-h-[100dvh] md:h-screen flex flex-col">
+      <div className="md:h-[8%]"><NavBar /></div>
+      <div className="md:h-[91%]"><Outlet /></div>
       <Footer />
     </div>
   );

@@ -19,3 +19,12 @@ export const generateToken = (userId: string, res: Response) => {
 
   return token;
 };
+
+export const clearToken = (res: Response) => {
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: false,
+  });
+  return true
+};

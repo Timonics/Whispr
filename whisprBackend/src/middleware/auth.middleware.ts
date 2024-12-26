@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
-import { User } from "../db/models/user.model";
-import { CustomJwtPayload } from "../interfaces";
+import {
+  JsonWebTokenError,
+  TokenExpiredError,
+  verify,
+  VerifyErrors,
+} from "jsonwebtoken";
+import { CustomJwtPayload, UserAuthRequest } from "../interfaces";
 
 export const protectedRoute = async (
   req: Request,
@@ -16,18 +20,28 @@ export const protectedRoute = async (
       return;
     }
 
-    const decoded = verify(token, secret) as CustomJwtPayload;
-    if (!decoded) {
-      res.status(401).json({ message: "Unauthorized - Invalid token" });
-      return;
-    }
+    verify(token, secret, (err: any, decoded: any) => {
+      if (err as JsonWebTokenError) {
+        res.status(401).json({ message: "Unauthorized - Invalid token" });
+        return;
+      }
+      if (err as TokenExpiredError) {
+        res.status(401).json({ message: "Unauthorized - Token expired" });
+        return;
+      }
+      if (err as VerifyErrors) {
+        res.status(401).json({ message: "Unauthorized - Token Error" });
+        return;
+      }
 
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      res.status(401).json({ message: "Unauthorized - User not found" });
-      return;
-    }
-    req.user = user;
-    next();
-  } catch (error) {}
+      const user = (decoded as CustomJwtPayload).userId;
+
+      (req as UserAuthRequest).user = user;
+
+      next();
+    });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };

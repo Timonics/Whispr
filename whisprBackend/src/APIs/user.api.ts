@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { User } from "../db/models/user.model";
 import { hash, compare } from "bcryptjs";
-import { UserAttributes } from "../interfaces";
-import { generateToken } from "../lib/utils.lib";
+import { UserAttributes, UserAuthRequest } from "../interfaces";
+import { clearToken, generateToken } from "../lib/utils.lib";
 
 const createNewUser = async (req: Request, res: Response) => {
   try {
@@ -29,6 +29,42 @@ const createNewUser = async (req: Request, res: Response) => {
     }
 
     res.status(201).json(savedUser);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getUser = async (req: Request, res: Response) => {
+  try {
+    const { userID } = req.params;
+    const user = await User.findById(userID);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as UserAuthRequest).user;
+    const profile = await User.findById(userId);
+    if (!profile) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({
+        name: profile.name,
+        email: profile.email,
+        avatar: profile.avatar,
+      });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -70,7 +106,7 @@ const login = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const { userID } = req.params;
+    const userID = (req as UserAuthRequest).user
     const { name, email, avatar } = req.body;
     const userExists = await User.findById(userID);
     if (!userExists) {
@@ -126,7 +162,12 @@ const updateUserPassword = async (req: Request, res: Response) => {
 const addFriend = async (req: Request, res: Response) => {
   try {
     const { friendEmail } = req.body;
-    const userId = req.user._id;
+    const userId = (req as UserAuthRequest).user;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
 
     const friend = await User.findOne({ email: friendEmail });
     if (!friend) {
@@ -166,4 +207,26 @@ const addFriend = async (req: Request, res: Response) => {
   }
 };
 
-export { createNewUser, login, updateUser, updateUserPassword, addFriend };
+const logout = async (req: Request, res: Response) => {
+  try {
+    const isloggedOut = clearToken(res);
+    if (!isloggedOut) {
+      res.status(400).json({ message: "Failed to logout" });
+    }
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export {
+  createNewUser,
+  getUser,
+  login,
+  updateUser,
+  updateUserPassword,
+  addFriend,
+  logout,
+  getProfile
+};
