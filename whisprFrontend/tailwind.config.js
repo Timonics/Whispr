@@ -7,6 +7,8 @@ export default {
     extend: {
       screens: {
         mobile: { max: "767.5px" },
+        mobileSm: { max: "639.5px" },
+        tabletmini: { min: "640px", max: "767.5px" },
         tablet: { min: "768px", max: "1023.5px" },
       },
       fontFamily: {
@@ -15,8 +17,8 @@ export default {
         sans: "Open-sans",
       },
       colors: {
-        mypurple: "#7741f4"
-      }
+        mypurple: "#7741f4",
+      },
     },
   },
   plugins: [daisyui],

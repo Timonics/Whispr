@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const messagesSchema = new Schema({
-  message: {
+  text: {
     type: String,
   },
   image: {
@@ -23,5 +23,5 @@ const messagesSchema = new Schema({
   },
 });
 
-const Messages = model("Messages", messagesSchema);
-export { Messages };
+const Message = mongoose.model("Message", messagesSchema);
+export { Message };

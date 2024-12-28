@@ -35,7 +35,7 @@ const createNewUser = async (req: Request, res: Response) => {
   }
 };
 
-const getUser = async (req: Request, res: Response) => {
+const getUserProfile = async (req: Request, res: Response) => {
   try {
     const { userID } = req.params;
     const user = await User.findById(userID);
@@ -58,13 +58,11 @@ const getProfile = async (req: Request, res: Response) => {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    res
-      .status(200)
-      .json({
-        name: profile.name,
-        email: profile.email,
-        avatar: profile.avatar,
-      });
+    res.status(200).json({
+      name: profile.name,
+      email: profile.email,
+      avatar: profile.avatar,
+    });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -106,7 +104,7 @@ const login = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const userID = (req as UserAuthRequest).user
+    const userID = (req as UserAuthRequest).user;
     const { name, email, avatar } = req.body;
     const userExists = await User.findById(userID);
     if (!userExists) {
@@ -130,7 +128,7 @@ const updateUser = async (req: Request, res: Response) => {
 
 const updateUserPassword = async (req: Request, res: Response) => {
   try {
-    const { userID } = req.params;
+    const userID = (req as UserAuthRequest).user;
     const { oldPassword, newPassword } = req.body;
     const userExists = await User.findById(userID);
     if (!userExists) {
@@ -220,13 +218,45 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
+const deleteAccount = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as UserAuthRequest).user;
+    const deleteAccount = await User.findByIdAndDelete(userId);
+    if (!deleteAccount) {
+      res.status(400).json({ message: "Failed to delete account" });
+      return;
+    }
+    clearToken(res);
+    res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const checkAuthenticated = async (req: Request, res: Response) => {
+  try {
+    const isAuth = (req as UserAuthRequest).user;
+    if (!isAuth) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    res.status(200).json({ message: "Authenticated" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   createNewUser,
-  getUser,
+  getUserProfile,
   login,
   updateUser,
   updateUserPassword,
   addFriend,
   logout,
-  getProfile
+  getProfile,
+  deleteAccount,
+  checkAuthenticated,
 };

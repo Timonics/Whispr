@@ -139,13 +139,13 @@ const Signup: React.FC = () => {
           <span className="font-semibold">Privacy Policy</span>.
         </p>
       </div>
-      <div className="mobile:hidden flex flex-col items-center justify-center gap-5 p-2 lg:w-[370px]">
-        <div className="flex flex-col gap-3 lg:hidden">
-          <div className="flex gap-3">
+      <div className="mobile:hidden flex flex-col items-center justify-center gap-5 p-2 lg:w-[450px]">
+        <div className="flex flex-col gap-2 lg:hidden">
+          <div className="flex gap-2">
             <div className="size-[80px] bg-[#1D232A] rounded-lg shadow-xl bg-[#4044486d]"></div>
             <div className="size-[80px] bg-[#1D232A] rounded-lg shadow-xl bg-[#4044486d]"></div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <div className="size-[80px] bg-[#1D232A] rounded-lg shadow-xl bg-[#4044486d]"></div>
             <div className="size-[80px] bg-[#1D232A] rounded-lg shadow-xl bg-[#4044486d]"></div>
           </div>

@@ -1,20 +1,23 @@
 import React from "react";
-import UserProfileIcon from "../../../components/UserProfileIcon";
 import Footer from "../../../components/Footer";
 
 import { PiChatsCircleBold } from "react-icons/pi";
 import { MdOutlineGroups } from "react-icons/md";
 import { IoCallSharp } from "react-icons/io5";
 import { TbUser } from "react-icons/tb";
-import { TbMenu2, TbSettings } from "react-icons/tb";
+import { TbMenu3, TbSettings } from "react-icons/tb";
+//import SendMessageInfo from "../../../components/SendMessage";
+import Chat from "../../../components/SendMessage/Chat";
 
 const index: React.FC = () => {
-  const chatEle = Array.from({ length: 10 }).map(() => {
+  const chatEle = Array.from({ length: 20 }).map(() => {
     return (
       <div>
         <div className="flex p-2 justify-between items-center">
           <div className="flex gap-3 items-center">
-            <UserProfileIcon height={30} width={30} opacity={95} colorHex="" />
+            <div className="size-[40px] rounded-full bg-black/30 flex items-center justify-center">
+              <TbUser />
+            </div>
             <div className="">
               <p className="text-[13px] font-extrabold font-pops">John Doe </p>
               <p className="text-[9px] font-light">Hello, how are you?</p>
@@ -28,36 +31,59 @@ const index: React.FC = () => {
   });
 
   return (
-    <div className="md:flex h-full gap-2">
-      <aside className="w-[40px] lg:w-[50px] mobile:hidden flex flex-col items-center gap-5 text-xl bg-gray-950 pt-4 backdrop-blur-sm">
-        <TbMenu2 />
-        <PiChatsCircleBold />
-        <MdOutlineGroups />
-        <IoCallSharp />
+    <div className="sm:flex h-full gap-1">
+      <aside className="w-[40px] lg:w-[50px] mobileSm:hidden flex flex-col items-center gap-5 text-xl md:bg-gray-950 pt-4 tabletmini:pl-2 tabletmini:text-lg h-full">
+        <div className="p-1.5 rounded-md bg-slate-700">
+          <TbMenu3 />
+        </div>
+        <div className="p-1.5 rounded-md bg-slate-00">
+          <PiChatsCircleBold />
+        </div>
+        <div className="p-1.5 rounded-md bg-slate-70">
+          <MdOutlineGroups />
+        </div>
+        <div className="p-1.5 rounded-md bg-slate-00">
+          <IoCallSharp />
+        </div>
         <div className="mt-auto flex flex-col items-center gap-5 pb-4 w-full">
-          <hr className="w-4/5 opacity-30 border"/>
-        {/* <TbNotification /> */}
-        <TbUser />
-        <TbSettings />
+          <hr className="w-4/5 opacity-30 border" />
+          {/* <TbNotification /> */}
+          <div>
+            <TbUser />
+          </div>
+          <div>
+            <TbSettings />
+          </div>
         </div>
       </aside>
-      <div className="h-full md:w-2/4 lg:w-2/5 md:mt-3">
-        <div className="flex justify-between px-2 flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <h2 className="font-extrabold text-xl font-monte">My Chats</h2>
+      <div className="sm:w-full md:w-2/5 h-full">
+        <div className="h-full items-center justify-center">
+          <div className="flex px-2 flex-col gap-2 lg:h-[15%] md:h-[18%] justify-center ">
+            <div className="flex items-center gap-2">
+              <h2 className="font-extrabold lg:text-[27px] text-xl font-monte">
+                My Chats
+              </h2>
+            </div>
+            <input
+              className="bg-[#434c5491] font-pops text-xs p-1 rounded-md border-b-[1px] border-indigo-600"
+              type="text"
+              placeholder={`Search`}
+            />
           </div>
-          <input
-            className="bg-[#434c5491] font-pops text-xs p-1 rounded-md border-b-[1px] border-indigo-600"
-            type="text"
-            placeholder="Search"
-          />
-        </div>
-        <div className="mt-2 mb-12 m-1.5 mobile:rounded-xl md:rounded-t-xl bg-[#434c544f] space-y-2 p-2 md:h-[83%] lg:h-[85%] md:overflow-y-auto">
-          {chatEle}
+          <div className="lg:h-[85%] md:h-[82%] lg:p-2 md:p-1 md:pb-1.5 px-2 py-2">
+            <div className="mobileSm:mb-10 mobile:rounded-xl md:rounded-xl bg-[#434c544f] space-y-2 p-2 h-full md:overflow-y-auto flex flex-col shadow-2xl">
+              {chatEle}
+            </div>
+          </div>
         </div>
         <Footer />
       </div>
-      <div className="w-2/4 lg:w-3/5 mobile:hidden"></div>
+      <div className="w-3/5 p-2 pb-1.5 mobile:hidden">
+        <div className="rounded-xl bg-black/40 h-full shadow-2xl">
+          {/* <SendMessageInfo /> */}
+          <Chat />
+        </div>
+      </div>
     </div>
   );
 };

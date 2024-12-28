@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import dataBaseConnect from "./db/config";
 
 import userRoutes from "./routes/user.routes";
+import messageRoutes from "./routes/message.routes";
+import conversationRoutes from "./routes/conversation.routes";
 
 import { config } from "dotenv";
 config();
@@ -18,6 +20,8 @@ const PORT = process.env.PORT;
 const api = process.env.API_URL;
 
 app.use(`${api}users`, userRoutes);
+app.use(`${api}messages`, messageRoutes);
+app.use(`${api}conversations`, conversationRoutes);
 
 dataBaseConnect();
 

@@ -9,7 +9,6 @@ export interface UserAttributes extends Document {
   avatar?: string | null;
 }
 
-
 export interface UserAuthRequest extends Request {
   user: Types.ObjectId;
 }
