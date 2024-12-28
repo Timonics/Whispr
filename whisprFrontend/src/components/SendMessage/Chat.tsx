@@ -7,7 +7,7 @@ import { TbSearch, TbPhone, TbUser, TbSend } from "react-icons/tb";
 const Chat: React.FC = () => {
   return (
     <div className="flex flex-col h-full p-2">
-      <div className="flex gap-2 items-center w-full border-b border-white/40 pb-1.5">
+      <div className="flex gap-2 items-center w-full ">
         <div className="flex items-center justify-between w-full ">
           <div className="flex items-center gap-2">
             <div className="size-[40px] rounded-full bg-white/10 flex items-center justify-center text-lg">
@@ -23,9 +23,9 @@ const Chat: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="h-full"></div>
+      <div className="h-full m-1 my-2 rounded-xl bg-white/5"></div>
       <div className="mt-auto flex items-center w-full p-1 gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <BsEmojiSmile />
           <CgAttachment />
         </div>
