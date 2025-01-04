@@ -15,3 +15,24 @@ body {
 /* .intro-gradient {
   background: linear-gradient(145deg, );
 } */
+
+.Toastify__toast {
+  min-height: 10px; /* Reduce height */
+  width: 210px;     /* Reduce width */
+  font-size: 0.7rem; /* Adjust font size if needed */
+  display: flex;
+  justify-content: center;
+  font-family: Poppins;
+  background-color: #7741f4;
+  color: rgba(0, 0, 0, 0.84);
+}
+/* Optionally adjust the toast body padding */
+.Toastify__toast-body {
+  padding: 8px;
+}
+
+/* Adjust the close button size */
+.Toastify__close-button {
+  width: 16px;
+  height: 16px;
+}

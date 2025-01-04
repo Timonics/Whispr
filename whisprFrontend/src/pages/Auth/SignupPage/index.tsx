@@ -1,8 +1,12 @@
-import React, { ChangeEvent, useState } from "react";
-import { FormData } from "../../../interfaces";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { CreateUserData, FormData } from "../../../interfaces";
 import { Link } from "react-router-dom";
+import { useMyContext } from "../../../context/MyAppContextProvider";
+import { toast } from "react-toastify";
+import Loading from "../../../components/Loading";
 
 const Signup: React.FC = () => {
+  const { registerUser, isLoading } = useMyContext();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -17,19 +21,42 @@ const Signup: React.FC = () => {
       [name]: value,
     }));
   };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const { password, confirmPassword } = formData;
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    const userData: CreateUserData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    };
+    registerUser(userData);
+  };
+
   return (
     <div className="md:flex gap-5 md:p-8 md:bg-black/45 md:rounded-xl md:shadow-2xl md:shadow-[#7741f4]/10">
+      {isLoading && <Loading />}
       <div className="px-5 py-4 rounded-xl space-y-3 bg-[#434c544f] shadow-2xl shadow-[#7741f4]/15">
         <div className="text-center leading-4">
           <h1 className="font-bold font-monte sm:text-lg md:text-xl lg:text-2xl">
             Welcome to{" "}
-            <span className="text-[#7741f4] text-xl sm:text-2xl lg:text-3xl">Whispr.</span>
+            <span className="text-[#7741f4] text-xl sm:text-2xl lg:text-3xl">
+              Whispr.
+            </span>
           </h1>
           <p className="text-[10px] sm:text-[11px] lg:text-xs font-extralight">
             Stay connected. Start conversations. Share moments.
           </p>
         </div>
-        <form className="text-[10px] sm:text-[11px] md:text-xs lg:text-sm">
+        <form
+          id="signupForm"
+          className="text-[10px] sm:text-[11px] md:text-xs lg:text-sm"
+          onSubmit={handleSubmit}
+        >
           <div className="flex flex-col gap-4 lg:gap-5">
             <label className="flex items-center gap-2 w-full border-b-[1.5px] border-[#7741f4]">
               <svg
@@ -127,12 +154,13 @@ const Signup: React.FC = () => {
             Log in
           </Link>
         </p>
-        <Link
-          to="../verify-success"
+        <button
+          form="signupForm"
+          type="submit"
           className="w-full btn mobile:btn-sm flex justify-center rounded-lg mobile:text-xs font-monte font-bold bg-[#7741f4] text-[#FFB6C1] transition duration-500 ease-in-out hover:bg-[#FFB6C1] hover:text-[#1D232A]"
         >
           Create your account
-        </Link>
+        </button>
         <p className="text-[8px] font-thin text-center sm:text-[10px] md:text-xs">
           By signing up, you agree to our{" "}
           <span className="font-semibold">Terms of Service</span> and{" "}

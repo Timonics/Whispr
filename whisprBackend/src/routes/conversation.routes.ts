@@ -4,6 +4,6 @@ import { getConversations } from "../APIs/conversation.api";
 
 const router = Router();
 
-router.get("/convo", protectedRoute, getConversations)
+router.get("/", protectedRoute, getConversations)
 
 export default router;

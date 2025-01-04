@@ -1,15 +1,13 @@
 import React, { useEffect } from "react";
 import { useMyContext } from "../../context/MyAppContextProvider";
-import { useNavigate } from "react-router-dom";
 
 const Intro: React.FC = () => {
-  const { userProfile } = useMyContext();
-  const navigate = useNavigate();
+  const { checkIsAuthenticated } = useMyContext();
 
   useEffect(() => {
     setTimeout(() => {
-      userProfile ? navigate("/home") : navigate("/auth/register");
-    }, 1500);
+      checkIsAuthenticated();
+    }, 2000);
   }, []);
 
   return (

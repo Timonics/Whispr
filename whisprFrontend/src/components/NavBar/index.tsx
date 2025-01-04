@@ -4,8 +4,10 @@ import { BsThreeDots } from "react-icons/bs";
 import { TbNotification, TbSettings } from "react-icons/tb";
 import { TbLogout } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
+import { useMyContext } from "../../context/MyAppContextProvider";
 
 const NavBar: React.FC = () => {
+  const { userLogout } = useMyContext();
   const location = useLocation();
   const [isHeaderVisible, setIsHeaderVisible] = useState(false);
   const targetRef = useRef(null);
@@ -43,6 +45,10 @@ const NavBar: React.FC = () => {
     };
   }, []);
 
+  const handleClick = () => {
+    userLogout();
+  };
+
   return (
     <>
       <header
@@ -70,7 +76,7 @@ const NavBar: React.FC = () => {
         </h1>
         <div className="flex gap-6">
           <TbSettings />
-          <TbLogout />
+          <TbLogout onClick={handleClick} />
         </div>
       </div>
     </>

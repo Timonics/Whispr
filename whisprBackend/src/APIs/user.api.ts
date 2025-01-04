@@ -28,7 +28,12 @@ const createNewUser = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(201).json(savedUser);
+    res.status(201).json({
+      _id: newUser.id,
+      name,
+      email,
+      avatar,
+    });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -59,6 +64,7 @@ const getProfile = async (req: Request, res: Response) => {
       return;
     }
     res.status(200).json({
+      _id: profile.id,
       name: profile.name,
       email: profile.email,
       avatar: profile.avatar,

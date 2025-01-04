@@ -6,14 +6,14 @@ import { MdOutlineGroups } from "react-icons/md";
 import { IoCallSharp } from "react-icons/io5";
 import { TbUser } from "react-icons/tb";
 import { TbMenu3, TbSettings } from "react-icons/tb";
-//import SendMessageInfo from "../../../components/SendMessage";
-import Chat from "../../../components/SendMessage/Chat";
+import SendMessageInfo from "../../../components/SendMessage";
+import { Link, NavLink } from "react-router-dom";
 
 const index: React.FC = () => {
   const chatEle = Array.from({ length: 20 }).map(() => {
     return (
-      <div>
-        <div className="flex p-2 justify-between items-center">
+      <>
+        <NavLink to={""} className="flex p-2 justify-between items-center">
           <div className="flex gap-3 items-center">
             <div className="size-[40px] rounded-full bg-black/30 flex items-center justify-center">
               <TbUser />
@@ -24,15 +24,15 @@ const index: React.FC = () => {
             </div>
           </div>
           <p className="text-[8px] font-extralight italic">Now</p>
-        </div>
+        </NavLink>
         <hr className="opacity-5" />
-      </div>
+      </>
     );
   });
 
   return (
-    <div className="sm:flex h-full gap-1">
-      <aside className="w-[40px] lg:w-[50px] mobileSm:hidden flex flex-col items-center gap-5 text-xl md:bg-gray-950 pt-4 tabletmini:pl-2 tabletmini:text-lg h-full">
+    <div className="sm:flex h-full gap-">
+      <aside className="w-[40px] lg:w-[50px] mobileSm:hidden flex flex-col items-center gap-5 text-xl md:bg-gray-950 pt-4 tabletmini:pl-1 tabletmini:text-lg h-full">
         <div className="p-1.5 rounded-md bg-slate-700">
           <TbMenu3 />
         </div>
@@ -48,9 +48,9 @@ const index: React.FC = () => {
         <div className="mt-auto flex flex-col items-center gap-5 pb-4 w-full">
           <hr className="w-4/5 opacity-30 border" />
           {/* <TbNotification /> */}
-          <div>
+          <Link to="profile">
             <TbUser />
-          </div>
+          </Link>
           <div>
             <TbSettings />
           </div>
@@ -58,7 +58,7 @@ const index: React.FC = () => {
       </aside>
       <div className="sm:w-full md:w-2/5 h-full">
         <div className="h-full items-center justify-center">
-          <div className="flex px-2 flex-col gap-2 lg:h-[15%] md:h-[18%] justify-center ">
+          <div className="flex px-2 flex-col gap-2 lg:h-[15%] sm:h-[18%] justify-center ">
             <div className="flex items-center gap-2">
               <h2 className="font-extrabold lg:text-[27px] text-xl font-monte">
                 My Chats
@@ -70,8 +70,8 @@ const index: React.FC = () => {
               placeholder={`Search`}
             />
           </div>
-          <div className="lg:h-[85%] md:h-[82%] lg:p-2 md:p-1 md:pb-1.5 px-2 py-2">
-            <div className="mobileSm:mb-10 mobile:rounded-xl md:rounded-xl bg-[#434c544f] space-y-2 p-2 h-full md:overflow-y-auto flex flex-col shadow-2xl">
+          <div className="lg:h-[85%] sm:h-[82%] lg:p-2 md:p-1 md:pb-1.5 px-2 py-2">
+            <div className="mobileSm:mb-10 mobile:rounded-xl md:rounded-xl bg-[#434c544f] space-y-2 p-2 h-full sm:overflow-y-auto flex flex-col shadow-2xl">
               {chatEle}
             </div>
           </div>
@@ -80,8 +80,8 @@ const index: React.FC = () => {
       </div>
       <div className="w-3/5 p-2 pb-1.5 mobile:hidden">
         <div className="rounded-xl bg-black/40 h-full shadow-2xl">
-          {/* <SendMessageInfo /> */}
-          <Chat />
+          <SendMessageInfo />
+          {/* <Chat /> */}
         </div>
       </div>
     </div>

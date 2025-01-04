@@ -1,8 +1,29 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
+import Loading from "../../../components/Loading";
+import { LoginData } from "../../../interfaces";
+import { useMyContext } from "../../../context/MyAppContextProvider";
 
 const Login: React.FC = () => {
+  const { userLogin, isLoading } = useMyContext();
+  const [formData, setFormData] = React.useState<LoginData>({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    userLogin(formData);
+    //TO_DO: error handling
+  };
+
   return (
     <div className="flex flex-col items-center px-5 py-4 rounded-xl justify-center gap-5 bg-[#434c544f] shadow-2xl shadow-[#7741f4]/15">
+      {isLoading && <Loading />}
       <div className="flex flex-col items-center justify-center">
         <h1 className="font-bold font-monte sm:text-xl">
           Welcome Back to{" "}
@@ -12,7 +33,10 @@ const Login: React.FC = () => {
           Where conversations come alive.
         </p>
       </div>
-      <form className="flex flex-col gap-4 text-xs sm:text-sm w-full">
+      <form
+        className="flex flex-col gap-4 text-xs sm:text-sm w-full"
+        onSubmit={handleSubmit}
+      >
         <div className="flex flex-col gap-4">
           <label className="flex items-center gap-2 w-full border-b-[1.5px] border-[#7741f4]">
             <svg
@@ -29,7 +53,8 @@ const Login: React.FC = () => {
               className="p-1.5 w-full bg-[#40444800] outline-none font-monte"
               placeholder="Email"
               name="email"
-              value=""
+              value={formData.email}
+              onChange={handleChange}
             />
           </label>
           <label className="flex items-center gap-2 w-full border-b-[1.5px] border-[#7741f4]">
@@ -50,7 +75,8 @@ const Login: React.FC = () => {
               className="p-1.5 w-full bg-[#40444800] outline-none font-monte"
               placeholder="Password"
               name="password"
-              value=""
+              value={formData.password}
+              onChange={handleChange}
             />
           </label>
           <p className="text-[9px] font-thin ml-auto">
@@ -59,7 +85,10 @@ const Login: React.FC = () => {
               Reset it here
             </span>
           </p>
-          <button className="btn font-monte font-bold bg-[#7741f4] text-[#FFB6C1] transition duration-500 ease-in-out hover:bg-[#FFB6C1] hover:text-[#1D232A]">
+          <button
+            type="submit"
+            className="btn font-monte font-bold bg-[#7741f4] text-[#FFB6C1] transition duration-500 ease-in-out hover:bg-[#FFB6C1] hover:text-[#1D232A]"
+          >
             Log In
           </button>
         </div>
