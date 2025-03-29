@@ -1,4 +1,3 @@
-import daisyui from "daisyui";
 /** @type {import('tailwindcss').Config} */
 
 export default {
@@ -10,6 +9,7 @@ export default {
         mobileSm: { max: "639.5px" },
         tabletmini: { min: "640px", max: "767.5px" },
         tablet: { min: "768px", max: "1023.5px" },
+        tabmax: { min: "640px", max: "1023.5px" },
       },
       fontFamily: {
         monte: "Montserrat",
@@ -21,5 +21,4 @@ export default {
       },
     },
   },
-  plugins: [daisyui],
 };

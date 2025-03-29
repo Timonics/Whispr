@@ -1,0 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #1e242f;
+  color: rgb(255 255 255 / 0.6);
+}
+
+/* .intro-gradient {
+  background: linear-gradient(145deg, );
+} */
+
+.Toastify__toast {
+  min-height: 10px; /* Reduce height */
+  width: 210px; /* Reduce width */
+  font-size: 0.7rem; /* Adjust font size if needed */
+  display: flex;
+  justify-content: center;
+  font-family: Poppins;
+  background-color: #7741f4;
+  color: rgba(0, 0, 0, 0.84);
+}
+/* Optionally adjust the toast body padding */
+.Toastify__toast-body {
+  padding: 8px;
+}
+
+/* Adjust the close button size */
+.Toastify__close-button {
+  width: 16px;
+  height: 16px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

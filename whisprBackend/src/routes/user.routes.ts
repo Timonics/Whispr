@@ -16,7 +16,7 @@ import { protectedRoute } from "../middleware/auth.middleware";
 const router = Router();
 
 router.get("/profile/my-profile", protectedRoute, getProfile);
-router.get("/profile/:userID", protectedRoute, getUserProfile);
+router.get("/profile/:userEmail", protectedRoute, getUserProfile);
 router.post("/register", createNewUser);
 router.post("/login", login);
 router.post("/new-friend", protectedRoute, addFriend);

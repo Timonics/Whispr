@@ -13,7 +13,7 @@ export const generateToken = (userId: string, res: Response) => {
   res.cookie("jwt", token, {
     maxAge: 1 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
     secure: false, //to change in production
   });
 
@@ -23,7 +23,7 @@ export const generateToken = (userId: string, res: Response) => {
 export const clearToken = (res: Response) => {
   res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
     secure: false,
   });
   return true

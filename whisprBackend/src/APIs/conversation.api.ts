@@ -9,12 +9,12 @@ const getConversations = async (req: Request, res: Response) => {
       participants: {
         $in: [userId],
       },
-    })
+    }); /* 
       .populate({
         path: "messages",
         populate: { path: "sender receiver" },
       })
-      .populate("participants");
+      .populate("participants"); */
 
     if (!conversations || conversations.length === 0) {
       res.status(404).json({ message: "No conversations found" });

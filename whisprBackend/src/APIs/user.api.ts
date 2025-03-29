@@ -42,8 +42,13 @@ const createNewUser = async (req: Request, res: Response) => {
 
 const getUserProfile = async (req: Request, res: Response) => {
   try {
-    const { userID } = req.params;
-    const user = await User.findById(userID);
+    const { userEmail } = req.params;
+
+    console.log(userEmail);
+
+    const user = await User.findOne({where: {
+      email: userEmail.trim()
+    }});
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -95,7 +100,7 @@ const login = async (req: Request, res: Response) => {
     generateToken(userExists.id, res);
 
     const user = {
-      id: userExists._id,
+      _id: userExists._id,
       name: userExists.name,
       email: userExists.email,
       avatar: userExists.avatar,
@@ -148,6 +153,7 @@ const updateUserPassword = async (req: Request, res: Response) => {
     }
     //update password
     const newPasswordHash = await hash(newPassword, 10);
+
     const updatePassword = await User.findByIdAndUpdate(
       userID,
       { password: newPasswordHash },
@@ -175,14 +181,14 @@ const addFriend = async (req: Request, res: Response) => {
 
     const friend = await User.findOne({ email: friendEmail });
     if (!friend) {
-      res.status(400).json({ message: "Friend does not exists" });
+      res.status(400).json({ message: "Friend does not exist" });
       return;
     }
 
     //check if user is already friends with this user
     const user = await User.findById(userId);
     if (!user) {
-      res.status(400).json({ message: "User does not exists" });
+      res.status(400).json({ message: "User does not exist" });
       return; // user does not exist
     }
     const isFriend = user.friends.includes(friend._id);

@@ -3,9 +3,13 @@ import { config } from "dotenv";
 
 config();
 
-const URI = process.env.DB_URI || "";
+const URI = process.env.DB_URI;
 
 const dataBaseConnect = async () => {
+  if (!URI) {
+    console.log("Invalid URI");
+    return;
+  }
   const connected = await mongoose.connect(URI);
   if (!connected) {
     console.log("Error connecting to MongoDB");
