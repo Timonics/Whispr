@@ -17,15 +17,10 @@ const userSchema = new Schema({
   avatar: {
     type: String,
   },
-  status: {
-    type: String,
-  },
-  friends: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  isActive: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const User = mongoose.model("User", userSchema);

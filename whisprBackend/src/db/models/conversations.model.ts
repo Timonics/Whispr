@@ -8,14 +8,16 @@ const conversationSchema = new Schema({
       required: true,
     },
   ],
-  messages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Message",
-      required: true,
-    },
-  ],
+  last_message: {
+    type: Schema.Types.ObjectId,
+    ref: "Message",
+    required: false,
+  },
   created_at: {
+    type: Date,
+    default: Date.now(),
+  },
+  updated_at: {
     type: Date,
     default: Date.now(),
   },

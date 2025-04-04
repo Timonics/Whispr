@@ -3,7 +3,7 @@ import { UserProfile } from "./user";
 export interface AuthState {
   isAuthenticated: boolean;
   authIsLoading: boolean;
-  userProfile: UserProfile | null;
+  myProfile: UserProfile;
   registerUser: (registerData: RegisterData) => Promise<void>;
   loginUser: (loginData: LoginData) => Promise<void>;
   checkIsAuthenticated: () => Promise<void>;

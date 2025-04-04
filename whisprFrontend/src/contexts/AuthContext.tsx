@@ -11,7 +11,12 @@ const AuthProvider: React.FC<MyAppProps> = ({ children }) => {
   const serverURL: string = "http://localhost:5002/api/v1/";
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authIsLoading, setAuthIsLoading] = useState<boolean>(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [myProfile, setMyProfile] = useState<UserProfile>({
+    _id: "",
+    name: "",
+    email: "",
+    avatar: "",
+  });
 
   const registerUser = async (userRegisterData: RegisterData) => {
     setAuthIsLoading(true);
@@ -26,7 +31,7 @@ const AuthProvider: React.FC<MyAppProps> = ({ children }) => {
 
       const profileData = registerResponse.data as UserProfile;
       setIsAuthenticated(true);
-      setUserProfile(profileData);
+      setMyProfile(profileData);
     } catch (error: any) {
       console.error(error);
       if (error.response) {
@@ -46,7 +51,7 @@ const AuthProvider: React.FC<MyAppProps> = ({ children }) => {
         { withCredentials: true }
       );
       const profileData = loginResponse.data as UserProfile;
-      setUserProfile(profileData);
+      setMyProfile(profileData);
       setIsAuthenticated(true);
       toast.success("Logged in successfully");
     } catch (error: any) {
@@ -76,7 +81,7 @@ const AuthProvider: React.FC<MyAppProps> = ({ children }) => {
       await axios.get(`${serverURL}users/logout`, {
         withCredentials: true,
       });
-      setUserProfile({ _id: "", name: "", email: "", avatar: "" });
+      setMyProfile({ _id: "", name: "", email: "", avatar: "" });
       setIsAuthenticated(false);
       toast.success("Logged out successfully");
     } catch (error) {
@@ -87,7 +92,7 @@ const AuthProvider: React.FC<MyAppProps> = ({ children }) => {
   const contextValues = {
     isAuthenticated,
     authIsLoading,
-    userProfile,
+    myProfile,
     registerUser,
     loginUser,
     checkIsAuthenticated,

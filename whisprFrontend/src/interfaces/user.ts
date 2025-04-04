@@ -2,10 +2,8 @@ export interface UserResponseData {
   _id: string;
   name: string;
   email: string;
-  password: string;
-  friends: string[];
   avatar?: string;
-  status?: string;
+  isActive?: boolean
 }
 
 export interface UserProfile {

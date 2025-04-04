@@ -1,18 +1,30 @@
 import React, { ChangeEvent, useState } from "react";
-// import ChatInfo from "../pages/chats/ChatInfo";
 import SideNav from "../components/side-nav";
 import Chats from "../pages/chats";
-import { TbPlus } from "react-icons/tb";
+import { TbArrowLeft, TbPlus, TbUser } from "react-icons/tb";
 import ChatInfo from "../pages/chats/ChatInfo";
 import useConversation from "../hooks/useConversation";
 import Loading from "../components/load";
+import useAuth from "../hooks/useAuth";
+import { UserProfile } from "../interfaces/user";
 
 const ChatsLayout: React.FC = () => {
-  const { userProfile, getUserProfile, isLoading } = useConversation();
-  const [userSelected, setUserSelected] = useState<string>("");
+  const { myProfile } = useAuth();
+  const {
+    userProfile,
+    getUserProfile,
+    isLoading,
+    showUserProfile,
+    conversations,
+  } = useConversation();
   const [isUserSelected, setIsUserSelected] = useState<boolean>(false);
+  const [selectedUserProfile, setSelectedUserProfile] = useState<UserProfile>({
+    _id: "",
+    name: "",
+    email: "",
+    avatar: "",
+  });
   const [showAddUser, setShowAddUser] = useState<boolean>(false);
-
   const [userEmail, setUserEmail] = useState({
     email: "",
   });
@@ -28,29 +40,76 @@ const ChatsLayout: React.FC = () => {
     getUserProfile(userEmail.email);
   };
 
-  console.log(userProfile);
+  const conversationsMade = conversations.map((conversation) => {
+    const receiver = conversation.participants.find(
+      (participant) => participant._id !== myProfile._id
+    );
+
+    return receiver ? (
+      <div
+        key={conversation._id}
+        className="p-4 border-b cursor-pointer flex items-center gap-5"
+        onClick={() => {
+          setSelectedUserProfile(receiver);
+          setIsUserSelected(true);
+        }}
+      >
+        {receiver.avatar ? (
+          <img
+            src={receiver.avatar}
+            className="size-10 rounded-full bg-slate-600"
+          />
+        ) : (
+          <div className="size-[40px] rounded-full bg-white/10 flex items-center justify-center text-lg">
+            <TbUser />
+          </div>
+        )}
+        <div>
+          <h2 className="text-lg font-semibold font-pops">{receiver.name}</h2>
+          <p className="text-gray-500 text-sm font-monte">
+            Email: {receiver.email}
+          </p>
+        </div>
+      </div>
+    ) : null;
+  });
 
   return (
     <>
       <div className="h-full flex sm:gap-2 px-2 sm:px-0 pb-2">
         <SideNav />
         <div className="flex flex-col w-full">
-          <h1 className="font-pops pt-2 font-bold text-4xl lg:text-[40px] h-[64px] flex items-center">
-            Chats
-          </h1>
-          <div className="flex gap-3 pt-1 tabmax:mr-2">
-            <div className="flex pb-10 sm:pb-0 flex-col rounded-xl bg-slate-600/75 overflow-y-auto h-[calc(100vh-128px)] no-scrollbar w-full lg:w-1/3">
-              {
-                /* Array(10)
-              .fill(0)
-              .map((_, i) => (
+          <div className="h-[64px] flex items-center justify-between">
+            <h1 className="font-pops font-bold text-4xl lg:text-[40px]">
+              Chats
+            </h1>
+            <div className="mr-4 flex items-center gap-4">
+              <TbPlus
+                className="size-7 p-0.5 border-2 border-indigo-600 rounded-full bg-black text-indigo-600 cursor-pointer"
+                onClick={() => setShowAddUser(true)}
+              />
+              {isUserSelected && (
                 <div
-                key={i}
-                className="flex items-center justify-between p-4 border-b border-slate-700"
+                  className="flex items-center gap-1 bg-slate-900 rounded-lg p-2 cursor-pointer lg:hidden"
+                  onClick={() => {
+                    setIsUserSelected(false);
+                  }}
                 >
-                a
+                  <TbArrowLeft />
+                  <p className="opacity-40 text-xs font-monte">Back</p>
                 </div>
-              )) */
+              )}
+            </div>
+          </div>
+          <div className="flex h-full gap-3 pt-1 tabmax:mr-2">
+            <div
+              className={`${
+                isUserSelected ? "hidden lg:flex lg:w-1/3" : ""
+              } lg:w-1/3 flex pb-10 sm:pb-0 flex-col rounded-xl bg-slate-600/75 overflow-y-auto h-[calc(100vh-128px)] mobileSm:h-[calc(100vh-172px)] no-scrollbar w-full`}
+            >
+              {conversations.length !== 0 ? (
+                <div>{conversationsMade}</div>
+              ) : (
                 <div className="h-full flex flex-col gap-3 items-center justify-center text-8xl">
                   <TbPlus
                     className="rounded-full p-4 bg-indigo-600 text-gray-800 cursor-pointer"
@@ -60,10 +119,20 @@ const ChatsLayout: React.FC = () => {
                     Start a new conversation
                   </p>
                 </div>
-              }
+              )}
             </div>
-            <div className="hidden lg:flex w-2/3 bg-black/30 rounded-xl mr-2">
-              {isUserSelected ? <Chats /> : <ChatInfo />}
+            <div
+              className={`${
+                isUserSelected
+                  ? "w-full h-[calc(100vh-128px)] mobileSm:h-[calc(100vh-168px)] lg:w-2/3"
+                  : "hidden"
+              } lg:flex w-2/3 bg-black/30 mobileSm:h-[calc(100vh-172px)] rounded-xl mr-2`}
+            >
+              {isUserSelected ? (
+                <Chats userProfile={selectedUserProfile} />
+              ) : (
+                <ChatInfo />
+              )}
             </div>
           </div>
         </div>
@@ -102,6 +171,27 @@ const ChatsLayout: React.FC = () => {
             >
               Search user
             </button>
+            {showUserProfile && (
+              <div
+                className="flex gap-5  w-[90%] justify-center items-center p-3 rounded-xl bg-slate-800 font-pops cursor-pointer"
+                onClick={() => {
+                  setShowAddUser(false);
+                  setIsUserSelected(true);
+                }}
+              >
+                {userProfile?.avatar ? (
+                  <img
+                    src={userProfile.avatar}
+                    className="size-10 rounded-full bg-slate-600"
+                  />
+                ) : (
+                  <div className="size-10 rounded-full bg-slate-600 flex items-center justify-center">
+                    <TbUser size={25} />
+                  </div>
+                )}
+                <p className="font-bold">{userProfile?.name}</p>
+              </div>
+            )}
           </div>
         </>
       )}

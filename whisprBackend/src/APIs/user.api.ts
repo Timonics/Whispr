@@ -42,13 +42,9 @@ const createNewUser = async (req: Request, res: Response) => {
 
 const getUserProfile = async (req: Request, res: Response) => {
   try {
-    const { userEmail } = req.params;
+    const { email } = req.body;
 
-    console.log(userEmail);
-
-    const user = await User.findOne({where: {
-      email: userEmail.trim()
-    }});
+    const user = await User.findOne({ email }).select("-password");
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -169,54 +165,6 @@ const updateUserPassword = async (req: Request, res: Response) => {
   }
 };
 
-const addFriend = async (req: Request, res: Response) => {
-  try {
-    const { friendEmail } = req.body;
-    const userId = (req as UserAuthRequest).user;
-
-    if (!userId) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
-    }
-
-    const friend = await User.findOne({ email: friendEmail });
-    if (!friend) {
-      res.status(400).json({ message: "Friend does not exist" });
-      return;
-    }
-
-    //check if user is already friends with this user
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(400).json({ message: "User does not exist" });
-      return; // user does not exist
-    }
-    const isFriend = user.friends.includes(friend._id);
-    if (isFriend) {
-      res
-        .status(400)
-        .json({ message: "You are already friends with this user" });
-      return; // user is already friends with this user
-    }
-
-    const addFriendship = await User.findByIdAndUpdate(
-      userId,
-      {
-        $push: { friends: friend._id },
-      },
-      { new: true }
-    );
-    if (!addFriendship) {
-      res.status(400).json({ message: "Friendship is not added" });
-      return;
-    }
-    res.status(200).json({ message: "Friendship added successfully" });
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
 const logout = async (req: Request, res: Response) => {
   try {
     const isloggedOut = clearToken(res);
@@ -266,7 +214,6 @@ export {
   login,
   updateUser,
   updateUserPassword,
-  addFriend,
   logout,
   getProfile,
   deleteAccount,

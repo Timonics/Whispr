@@ -9,72 +9,100 @@ const SocketHandler = (io: Server) => {
   io.on("connection", (socket: Socket) => {
     console.log(`User ${socket.id} is connected`);
 
-    socket.on("userConnected", (userId: string) => {
+    socket.on("userConnected", async (userId: string) => {
       onlineUsers.set(userId, socket.id);
       console.log(`User ${userId} is online`);
+
+      await User.findByIdAndUpdate(userId, { isActive: true }, { new: true });
 
       io.emit("updatedOnlineUsers", Array.from(onlineUsers.keys()));
     });
 
-    socket.on("sendMessage", async ({ text, image, reciever, sender }) => {
-      const checkRecipient = await User.findOne({ _id: reciever });
+    socket.on("fetchMessages", async ({ senderId, receiverId }) => {
+      const messages = await Message.find({
+        $or: [
+          {
+            senderId: senderId,
+            receiverId: receiverId,
+          },
+          {
+            senderId: receiverId,
+            receiverId: senderId,
+          },
+        ],
+      });
+
+      if (!messages) {
+        console.error({ message: "No messages found" });
+        return;
+      }
+      
+      socket.emit("messagesFetched", messages);
+    });
+
+    socket.on("sendMessage", async ({ text, receiverId, senderId, image }) => {
+      const checkRecipient = await User.findOne({ _id: receiverId });
       if (!checkRecipient) {
         console.error({ message: "User not found" });
         return;
       }
 
-      let newMsg = new Message({
-        text,
-        image,
-        sender,
-        receiver: checkRecipient._id,
-      });
-
-      const conversationExists = await Conversation.findOne({
+      let conversations = await Conversation.findOne({
         participants: {
-          $all: [sender, reciever],
+          $all: [senderId, receiverId],
         },
       });
 
-      if (!conversationExists) {
-        const newConversation = await Conversation.create({
-          participants: [sender, reciever],
-          messages: [newMsg._id],
+      if (!conversations) {
+        conversations = new Conversation({
+          participants: [senderId, receiverId],
         });
-        if (!newConversation) {
-          console.error({ message: "Conversation creation failed" });
-          return;
-        }
-      } else {
-        const updateConversation = await Conversation.updateOne(
-          { _id: conversationExists._id },
-          { $push: { messages: newMsg._id } },
-          { new: true }
-        );
-
-        if (!updateConversation) {
-          console.error({ message: "Message not added to conversation" });
-          return;
-        }
-      }
-      newMsg = await newMsg.save();
-      if (!newMsg) {
-        console.error({ message: "Message not created" });
-        return;
+        await conversations.save();
       }
 
-      const recieverSocketId = onlineUsers.get(reciever);
+      let newMessage = {
+        conversationId: conversations._id,
+        text,
+        image,
+        senderId,
+        receiverId,
+      };
+
+      const message = new Message(newMessage);
+      await message.save();
+
+      await Conversation.findByIdAndUpdate(
+        conversations._id,
+        {
+          last_message: message._id,
+          updated_at: Date.now(),
+        },
+        { new: true }
+      );
+
+      //emitting message to both the sender and reciever
+      const recieverSocketId = onlineUsers.get(receiverId);
       if (recieverSocketId) {
-        io.to(recieverSocketId).emit("recieveMessage", { sender, text, image });
+        io.to(recieverSocketId).emit("receiveMessage", newMessage);
+      }
+
+      const senderSocketId = onlineUsers.get(senderId);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("receiveMessage", newMessage);
       }
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       const userId = [...onlineUsers.entries()].find(
         ([, socketId]) => socketId === socket.id
       )?.[0];
 
       if (userId) {
+        await User.findByIdAndUpdate(
+          userId,
+          { isActive: false },
+          { new: true }
+        );
         onlineUsers.delete(userId);
         console.log(`User ${userId} is disconnected`);
 

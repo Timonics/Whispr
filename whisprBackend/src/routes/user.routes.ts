@@ -4,7 +4,6 @@ import {
   login,
   updateUser,
   updateUserPassword,
-  addFriend,
   logout,
   getProfile,
   getUserProfile,
@@ -16,10 +15,9 @@ import { protectedRoute } from "../middleware/auth.middleware";
 const router = Router();
 
 router.get("/profile/my-profile", protectedRoute, getProfile);
-router.get("/profile/:userEmail", protectedRoute, getUserProfile);
+router.post("/profile/get-user", protectedRoute, getUserProfile);
 router.post("/register", createNewUser);
 router.post("/login", login);
-router.post("/new-friend", protectedRoute, addFriend);
 router.get("/logout", protectedRoute, logout);
 router.put("/profile/update-profile", protectedRoute, updateUser);
 router.put("/profile/update-password", protectedRoute, updateUserPassword);

@@ -1,21 +1,26 @@
 import mongoose, { Schema } from "mongoose";
 
 const messagesSchema = new Schema({
+  conversationId: {
+    type: Schema.Types.ObjectId,
+    ref: "Conversation",
+    required: true,
+  },
   text: {
     type: String,
   },
   image: {
     type: String,
   },
-  sender: {
+  senderId: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: true,
   },
-  receiver: {
+  receiverId: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: true,
   },
   timestamp: {
     type: Date,
