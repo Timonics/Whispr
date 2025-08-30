@@ -28,6 +28,7 @@ const protectedRoute = async (
     res.status(401).json({ message: "Unauthorized - Token not found" });
     return;
   }
+
   verify(token, secret, (err: any, decoded: any) => {
     if (err instanceof JsonWebTokenError) {
       res.status(401).json({ message: "Unauthorized - Invalid token" });

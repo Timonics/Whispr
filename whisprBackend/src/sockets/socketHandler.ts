@@ -3,19 +3,44 @@ import { User } from "../db/models/user.model";
 import { Message } from "../db/models/message.model";
 import { Conversation } from "../db/models/conversations.model";
 
-const onlineUsers = new Map<string, string>();
+const onlineUsers = new Map<string, { socketId: string; user: any }>();
 
 const SocketHandler = (io: Server) => {
   io.on("connection", (socket: Socket) => {
     console.log(`User ${socket.id} is connected`);
 
     socket.on("userConnected", async (userId: string) => {
-      onlineUsers.set(userId, socket.id);
+      const user = await User.findById(userId).select("_id name email avatar");
+
+      if (!user) {
+        console.error({ message: "User not found" });
+        return;
+      }
+
+      onlineUsers.set(userId, { socketId: socket.id, user });
       console.log(`User ${userId} is online`);
 
       await User.findByIdAndUpdate(userId, { isActive: true }, { new: true });
 
-      io.emit("updatedOnlineUsers", Array.from(onlineUsers.keys()));
+      io.emit(
+        "updatedOnlineUsers",
+        Array.from(onlineUsers.values()).map((u) => u.user)
+      );
+    });
+
+    socket.on("fetchConversations", async (userId: string) => {
+      const conversations = await Conversation.find({
+        participants: { $in: [userId] },
+      })
+        .populate("last_message")
+        .populate("participants", "_id name email avatar")
+        .sort({ updated_at: -1 });
+
+      if (!conversations) {
+        console.error({ message: "No conversations found" });
+        socket.emit("conversationsFetched", []);
+      }
+      socket.emit("conversationsFetched", conversations);
     });
 
     socket.on("fetchMessages", async ({ senderId, receiverId }) => {
@@ -30,13 +55,13 @@ const SocketHandler = (io: Server) => {
             receiverId: senderId,
           },
         ],
-      });
+      }).populate("receiverId", "_id name email avatar");
 
       if (!messages) {
         console.error({ message: "No messages found" });
-        return;
+        socket.emit("messagesFetched", []);
       }
-      
+
       socket.emit("messagesFetched", messages);
     });
 
@@ -81,20 +106,20 @@ const SocketHandler = (io: Server) => {
       );
 
       //emitting message to both the sender and reciever
-      const recieverSocketId = onlineUsers.get(receiverId);
-      if (recieverSocketId) {
-        io.to(recieverSocketId).emit("receiveMessage", newMessage);
+      const reciever = onlineUsers.get(receiverId);
+      if (reciever) {
+        io.to(reciever.socketId).emit("receiveMessage", message);
       }
 
-      const senderSocketId = onlineUsers.get(senderId);
-      if (senderSocketId) {
-        io.to(senderSocketId).emit("receiveMessage", newMessage);
+      const sender = onlineUsers.get(senderId);
+      if (sender) {
+        io.to(sender.socketId).emit("receiveMessage", message);
       }
     });
 
     socket.on("disconnect", async () => {
       const userId = [...onlineUsers.entries()].find(
-        ([, socketId]) => socketId === socket.id
+        ([, value]) => value.socketId === socket.id
       )?.[0];
 
       if (userId) {
@@ -106,7 +131,10 @@ const SocketHandler = (io: Server) => {
         onlineUsers.delete(userId);
         console.log(`User ${userId} is disconnected`);
 
-        io.emit("updatedOnlineUsers", Array.from(onlineUsers.keys()));
+        io.emit(
+          "updatedOnlineUsers",
+          Array.from(onlineUsers.values()).map((entry) => entry.user)
+        );
       }
     });
   });

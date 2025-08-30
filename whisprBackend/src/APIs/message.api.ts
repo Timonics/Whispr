@@ -7,8 +7,6 @@ const getUserMessages = async (req: Request, res: Response) => {
     const senderId = (req as UserAuthRequest).user;
     const recipientId = req.params.userID;
 
-    console.log(senderId, recipientId);
-
     if (senderId.toString() === recipientId) {
       res
         .status(404)

@@ -20,7 +20,7 @@ const createNewUser = async (req: Request, res: Response) => {
       avatar,
     });
 
-    generateToken(newUser.id, res);
+    const access_token = generateToken(newUser.id, res);
     const savedUser = await newUser.save();
 
     if (!savedUser) {
@@ -33,6 +33,7 @@ const createNewUser = async (req: Request, res: Response) => {
       name,
       email,
       avatar,
+      access_token
     });
   } catch (error) {
     console.error("Error creating user:", error);
@@ -93,13 +94,14 @@ const login = async (req: Request, res: Response) => {
     }
 
     //generate token and store to cookie
-    generateToken(userExists.id, res);
+    const access_token = generateToken(userExists.id, res);
 
     const user = {
       _id: userExists._id,
       name: userExists.name,
       email: userExists.email,
       avatar: userExists.avatar,
+      access_token
     };
 
     res.status(200).json(user);
