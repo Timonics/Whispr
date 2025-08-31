@@ -16,26 +16,43 @@ import cors from "cors";
 import { config } from "dotenv";
 config();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mick-whispr-frontend-myapp.loca.lt",
+];
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://mick-whispr-frontend-myapp.loca.lt",
+    ],
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: true,
   },
-}); 
+});
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true, 
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow non-browser tools like Postman
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, origin); // ✅ send exact origin
+      }
+      return callback(new Error("CORS not allowed"));
+    },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// make sure preflight OPTIONS are handled
+app.options("*", cors());
 
 const PORT = process.env.PORT;
 const api = process.env.API_URL;
