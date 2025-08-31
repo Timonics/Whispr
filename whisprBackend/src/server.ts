@@ -16,18 +16,12 @@ import cors from "cors";
 import { config } from "dotenv";
 config();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://mick-whispr-frontend-myapp.loca.lt",
-];
+const allowedOrigins = ["http://localhost:5173"];
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://mick-whispr-frontend-myapp.loca.lt",
-    ],
+    origin: ["http://localhost:5173"],
     methods: ["GET", "POST"],
     credentials: true,
   },
