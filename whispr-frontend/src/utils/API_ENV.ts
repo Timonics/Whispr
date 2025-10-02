@@ -1,4 +1,4 @@
-const env: string = "production";
+const env: string = "development";
 let api: string;
 
 if (env === "development") {

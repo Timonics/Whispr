@@ -30,7 +30,7 @@ interface SocketState {
   socket: Socket | null;
   onlineUsers: User[];
   conversations: Conversation[];
-  messages: Record<string, Message[]>; // 🔹 per-conversation messages
+  messages: Record<string, Message[]>;
 
   connectSocket: (userId: string) => void;
   fetchConversations: (userId: string) => void;

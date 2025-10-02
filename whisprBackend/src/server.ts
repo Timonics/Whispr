@@ -16,12 +16,21 @@ import cors from "cors";
 import { config } from "dotenv";
 config();
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://whispr-frontend-one.vercel.app",
+];
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173"],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, origin);
+      }
+      return callback(new Error("CORS not allowed by socket.io"));
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },

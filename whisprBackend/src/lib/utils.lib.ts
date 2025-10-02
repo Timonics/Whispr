@@ -15,7 +15,7 @@ export const generateToken = (userId: string, res: Response) => {
   res.cookie("jwt", token, {
     maxAge: 1 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "none",
     secure: env === "production" ? true : false,
   });
 
@@ -25,7 +25,7 @@ export const generateToken = (userId: string, res: Response) => {
 export const clearToken = (res: Response) => {
   res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "none",
     secure: env === "production" ? true : false,
   });
   return true;
