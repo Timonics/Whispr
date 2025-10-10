@@ -18,7 +18,7 @@ config();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://whispr-frontend-one.vercel.app",
+  "https://whispr-chat-front.vercel.app/",
 ];
 
 const server = http.createServer(app);
