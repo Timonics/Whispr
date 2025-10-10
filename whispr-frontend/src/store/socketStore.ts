@@ -57,7 +57,9 @@ const useSocketStore = create<SocketState>((set, get) => ({
   connectSocket: (userId: string) => {
     if (get().socket) return;
 
-    const socket = io("http://localhost:5002", {
+    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
+    const socket = io(socketUrl, {
       withCredentials: true,
     });
 

@@ -57,8 +57,8 @@ app.use(
 // make sure preflight OPTIONS are handled
 app.options("*", cors());
 
-const PORT = process.env.PORT;
-const api = process.env.API_URL;
+const PORT = process.env.PORT || 5002;
+const api = process.env.API_URL || "/api/v1/";
 
 app.use(`${api}users`, userRoutes);
 app.use(`${api}messages`, messageRoutes);
