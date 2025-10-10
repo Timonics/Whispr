@@ -16,10 +16,10 @@ import cors from "cors";
 import { config } from "dotenv";
 config();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://whispr-chat-front.vercel.app/",
-];
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://whispr-chat-front.vercel.app"]
+    : ["http://localhost:5173"];
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -27,7 +27,7 @@ const io = new Server(server, {
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
-        return callback(null, origin);
+        return callback(null, true);
       }
       return callback(new Error("CORS not allowed by socket.io"));
     },
@@ -42,9 +42,9 @@ app.use(morgan("dev"));
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow non-browser tools like Postman
+      if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
-        return callback(null, origin); // ✅ send exact origin
+        return callback(null, true);
       }
       return callback(new Error("CORS not allowed"));
     },
