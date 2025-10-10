@@ -1,8 +1,9 @@
 import axios from "axios";
 import type { AuthData, UserData } from "../interfaces/auth.interface";
-import { api } from "../utils/API_ENV";
 import useAuthStore from "../store/authStore";
 import { useState } from "react";
+
+const api: string = import.meta.env.VITE_API_URL
 
 const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
